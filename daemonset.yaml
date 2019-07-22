@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: readiness-chk-app
+  labels:
+    app: readiness-chk-app
+spec:
+  selector:
+    matchLabels:
+      app: readiness-chk-app
+  template:
+    metadata:
+      labels:
+        app: readiness-chk-app
+    spec:
+      hostNetwork: true
+      containers:
+      - name: readiness-chk-app-port-based-1
+        image: amitpandia/readiness-chk-app:port-based
+        command: ["/home/port-based-readiness-chk"]
+        args: ["node-sv12","6665"]
+        ports:
+        - containerPort: 6665
+        securityContext:
+          privileged: true
+        livenessProbe:
+          failureThreshold: 1
+          httpGet:
+            path: /healthz
+            port: 6665
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 1
+          successThreshold: 1
+          timeoutSeconds: 1  
+        readinessProbe:
+          failureThreshold: 1
+          httpGet:
+            path: /healthz
+            port: 6665
+            scheme: HTTP
+          periodSeconds: 1
+          successThreshold: 1
+          timeoutSeconds: 1  
+      - name: readiness-chk-app-port-based-2
+        image: amitpandia/readiness-chk-app:port-based
+        command: ["/home/port-based-readiness-chk"]
+        args: ["node-sv12","6666"]
+        ports:
+        - containerPort: 6666
+        securityContext:
+          privileged: true  
+        livenessProbe:
+          failureThreshold: 1
+          httpGet:
+            path: /healthz
+            port: 6666
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 1
+          successThreshold: 1
+          timeoutSeconds: 1  
+        readinessProbe:
+          failureThreshold: 1
+          httpGet:
+            path: /healthz
+            port: 6666
+            scheme: HTTP
+          periodSeconds: 1
+          successThreshold: 1
+          timeoutSeconds: 1  
